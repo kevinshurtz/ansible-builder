@@ -189,6 +189,26 @@ def test_v3_various(build_dir_and_ee_yml):
     assert 'CMD ["csh"]' in c.steps
 
 
+def test__posix_separator_in_entrypoint_on_windows(build_dir_and_ee_yml, mocker):
+    """
+    Test that the generated entrypoint uses the POSIX separator on Windows.
+    """
+    ee_data = """
+    version: 3
+    images:
+      base_image:
+        name: quay.io/user/mycustombaseimage:latest
+    """
+    import ntpath
+    mocker.patch("os.path", ntpath)
+
+    tmpdir, ee_path = build_dir_and_ee_yml(ee_data)
+    c = make_containerfile(tmpdir, ee_path, run_validate=True)
+    c.prepare()
+
+    assert 'ENTRYPOINT ["/opt/builder/bin/entrypoint", "dumb-init"]' in c.steps
+
+
 def test__handle_additional_build_files(build_dir_and_ee_yml):
     """
     Test additional build file handling works as expected.
