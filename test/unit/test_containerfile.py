@@ -296,7 +296,7 @@ def test_v1_builder_image(build_dir_and_ee_yml):
     c = make_containerfile(tmpdir, ee_path, run_validate=True)
     c.prepare()
     assert "FROM $EE_BUILDER_IMAGE AS builder" in c.steps
-    assert "COPY _build/scripts/pip_install /output/scripts/pip_install" in c.steps
+    assert "COPY --chmod=755 _build/scripts/pip_install /output/scripts/pip_install" in c.steps
     assert "RUN /output/scripts/pip_install $PYCMD" in c.steps
 
 
@@ -315,8 +315,9 @@ def test_v2_builder_image(build_dir_and_ee_yml):
     tmpdir, ee_path = build_dir_and_ee_yml(ee_data)
     c = make_containerfile(tmpdir, ee_path, run_validate=True)
     c.prepare()
+    print(c.steps)
     assert "FROM $EE_BUILDER_IMAGE AS builder" in c.steps
-    assert "COPY _build/scripts/pip_install /output/scripts/pip_install" in c.steps
+    assert "COPY --chmod=755 _build/scripts/pip_install /output/scripts/pip_install" in c.steps
     assert "RUN /output/scripts/pip_install $PYCMD" in c.steps
 
 
@@ -334,7 +335,7 @@ def test_v2_builder_image_default(build_dir_and_ee_yml):
     c = make_containerfile(tmpdir, ee_path, run_validate=True)
     c.prepare()
     assert "FROM base AS builder" in c.steps
-    assert "COPY _build/scripts/pip_install /output/scripts/pip_install" not in c.steps
+    assert "COPY --chmod=755 _build/scripts/pip_install /output/scripts/pip_install" not in c.steps
 
 
 def test_prepare_introspect_assemble_steps(build_dir_and_ee_yml):
